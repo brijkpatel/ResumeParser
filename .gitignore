@@ -51,6 +51,12 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Generated test data files
+*.pdf
+*.docx
+*.txt
+.DS_Store
+
 # Translations
 *.mo
 *.pot

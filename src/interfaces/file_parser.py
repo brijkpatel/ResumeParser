@@ -16,7 +16,7 @@ class FileParser(ABC):
     """
 
     @abstractmethod
-    def parse(self, file_path: Union[str, Path]) -> str:
+    def parse(self, file_path: str) -> str:
         """Parse a file and extract its text content.
 
         Args:
@@ -42,7 +42,7 @@ class FileParser(ABC):
             True if the parser supports this file format, False otherwise
         """
 
-    def _validate_file_path(self, file_path: Union[str, Path]) -> Path:
+    def _validate_file_path(self, file_path: Union[str, Path]) -> None:
         """Validate that the file path exists and is readable.
 
         Args:
@@ -61,7 +61,7 @@ class FileParser(ABC):
             raise FileNotFoundError(f"File not found: {path_obj}")
 
         if not path_obj.is_file():
-            raise FileParsingError(f"Path is not a file: {path_obj}")
+            raise FileParsingError("Path is not a file.")
 
         if not path_obj.stat().st_size > 0:
             logger.warning("File appears to be empty: %s", path_obj)
@@ -71,9 +71,13 @@ class FileParser(ABC):
             with open(path_obj, "rb") as f:
                 f.read(1)  # Try to read one byte
         except PermissionError as exc:
-            raise PermissionError(f"File is not readable: {path_obj}") from exc
-
-        return path_obj
+            raise FileParsingError(
+                "File is not readable.", original_exception=exc
+            ) from exc
+        except Exception as exc:
+            raise FileParsingError(
+                "Error reading file.", original_exception=exc
+            ) from exc
 
     def _get_file_extension(self, file_path: Union[str, Path]) -> str:
         """Get the file extension in lowercase.

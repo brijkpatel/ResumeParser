@@ -1,4 +1,4 @@
-"""Email extraction implementations using different strategies."""
+"""Extract skills list from resume text."""
 
 from typing import List
 
@@ -7,23 +7,28 @@ from exceptions import FieldExtractionError
 
 
 class SkillsExtractor(FieldExtractor[List[str]]):
-    """Extract Skills from provided text"""
+    """Extract list of skills using configured strategy."""
 
     def __init__(self, extraction_strategy: ExtractionStrategy[List[str]]):
-        """Initialize the regex skills extractor."""
+        """Initialize with extraction strategy (NER or LLM)."""
         self.extraction_strategy = extraction_strategy
 
     def extract(self, text: str) -> List[str]:
-        """Extract skills using regex patterns.
+        """Extract skills from text.
+
+        Steps:
+            1. Validate input text
+            2. Run extraction strategy
+            3. Return list of skills
 
         Args:
-            text: Text content to extract skills from
+            text: Resume text
 
         Returns:
-            List of extracted skills
+            List of skills
 
         Raises:
-            FieldExtractionError: If skills extraction fails
+            FieldExtractionError: If no skills found
         """
         processed_text = self.validate_input(text)
 
@@ -38,19 +43,7 @@ class SkillsExtractor(FieldExtractor[List[str]]):
             ) from e
 
     def validate_input(self, text: str) -> str:
-        """Validate and preprocess the input text.
-
-        Strips whitespace and ensures the text has at least 5 characters.
-
-        Args:
-            text: The input text to validate
-
-        Returns:
-            The stripped text
-
-        Raises:
-            FieldExtractionError: If validation fails
-        """
+        """Check text is long enough."""
         text = text.strip()
         if len(text) < 2:
             raise FieldExtractionError(

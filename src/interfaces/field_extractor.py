@@ -1,4 +1,4 @@
-"""Abstract base class for field extractors."""
+"""Base class for field extractors."""
 
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
@@ -8,26 +8,24 @@ T = TypeVar("T")  # Generic type for extraction result
 
 
 class FieldExtractor(ABC, Generic[T]):
-    """Abstract base class for field extractors.
+    """Base class for extracting fields from text.
 
-    This interface defines the contract for extracting specific fields from text.
-    Concrete implementations should handle different extraction strategies like
-    regex, NER, ML models, etc.
+    Implemented by: NameExtractor, EmailExtractor, SkillsExtractor
 
-    Type parameter T represents the type of the extracted field:
-    - str for name and email
-    - List[str] for skills
+    Type T is the return type:
+        - str for name and email
+        - List[str] for skills
     """
 
     @abstractmethod
     def extract(self, text: str) -> T:
-        """Extract a specific field from the given text.
+        """Extract field from text.
 
         Args:
-            text: Text content to extract field from
+            text: Resume text
 
         Returns:
-            Extracted field value of type T
+            Extracted value (type depends on field)
 
         Raises:
             FieldExtractionError: If extraction fails

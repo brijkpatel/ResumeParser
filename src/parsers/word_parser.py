@@ -1,4 +1,4 @@
-"""Word document parser implementation."""
+"""Extract text from Word documents (.docx and .doc files)."""
 
 from pathlib import Path
 from typing import Union, List
@@ -11,11 +11,7 @@ from utils import logger
 
 
 class WordParser(FileParser):
-    """Concrete implementation of FileParser for Word documents.
-
-    Uses python-docx library to extract text content from .docx files.
-    Also attempts to handle .doc files when possible.
-    """
+    """Parse Word documents and extract text content."""
 
     def __init__(self):
         """Initialize the Word parser."""
@@ -23,17 +19,22 @@ class WordParser(FileParser):
         logger.debug("WordParser initialized")
 
     def parse(self, file_path: str) -> str:
-        """Parse a Word document and extract its text content.
+        """Extract text from Word document.
+
+        Steps:
+            1. Validate file path
+            2. Check if legacy .doc or modern .docx
+            3. Extract text from paragraphs and tables
+            4. Return combined text
 
         Args:
-            file_path: Path to the Word document to parse
+            file_path: Path to Word document
 
         Returns:
-            Extracted text content from the document
+            Extracted text content
 
         Raises:
-            FileParsingError: If Word parsing fails
-            FileNotFoundError: If file does not exist
+            FileParsingError: If parsing fails
         """
         self._validate_file_path(file_path)
 
@@ -42,22 +43,22 @@ class WordParser(FileParser):
 
         logger.info("Parsing Word document: %s", file_path)
 
-        # Handle .doc files (legacy format)
+        # Handle legacy .doc files
         if self._get_file_extension(file_path) == ".doc":
             return self._parse_doc_file(file_path)
 
-        # Handle .docx files
+        # Parse .docx files
         try:
             document = Document(file_path)
             text_content: List[str] = []
 
-            # Extract text from paragraphs
+            # Extract from paragraphs
             for paragraph in document.paragraphs:
                 text = paragraph.text.strip()
                 if text:
                     text_content.append(text)
 
-            # Extract text from tables
+            # Extract from tables
             for table in document.tables:
                 for row in table.rows:
                     row_text: List[str] = []
@@ -71,7 +72,6 @@ class WordParser(FileParser):
             if not text_content:
                 raise FileParsingError("No text content found in document.")
 
-            # Join all content with newlines
             full_text = "\n".join(text_content)
 
             logger.info(
@@ -88,16 +88,16 @@ class WordParser(FileParser):
             ) from e
 
     def _parse_doc_file(self, file_path: str) -> str:
-        """Parse legacy .doc files.
+        """Try to parse legacy .doc files.
 
-        For .doc files, we provide a fallback approach since python-docx
-        doesn't support the legacy format natively.
+        Note: python-docx doesn't fully support .doc format.
+        Works with some files, fails with others.
 
         Args:
-            file_path: Path to the .doc file
+            file_path: Path to .doc file
 
         Returns:
-            Extracted text content
+            Extracted text
 
         Raises:
             FileParsingError: If parsing fails
@@ -105,7 +105,7 @@ class WordParser(FileParser):
         logger.warning("Legacy .doc format detected: %s", file_path)
 
         try:
-            # Try to use python-docx anyway (sometimes works with newer .doc files)
+            # Try python-docx (sometimes works with newer .doc files)
             document = Document(file_path)
             text_content: List[str] = []
 
@@ -124,19 +124,11 @@ class WordParser(FileParser):
                 "Error parsing Word document.", original_exception=e
             ) from e
 
-        # If python-docx fails, suggest alternative approaches
         raise FileParsingError(
             "Cannot parse legacy .doc file. Please convert to .docx format or use a tool like LibreOffice to convert the file."
         )
 
     def supports_format(self, file_path: Union[str, Path]) -> bool:
-        """Check if this parser supports the given file format.
-
-        Args:
-            file_path: Path to the file to check
-
-        Returns:
-            True if the file is a Word document, False otherwise
-        """
+        """Check if file is a Word document."""
         extension = self._get_file_extension(file_path)
         return extension in self.supported_extensions

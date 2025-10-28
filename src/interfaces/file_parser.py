@@ -1,4 +1,4 @@
-"""Abstract base class for file parsers."""
+"""Base class for file parsers."""
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -9,52 +9,32 @@ from utils import logger
 
 
 class FileParser(ABC):
-    """Abstract base class for file parsers following the Strategy pattern.
+    """Base class for parsing files to extract text.
 
-    This interface defines the contract for parsing different file formats.
-    Concrete implementations should handle specific file formats like PDF, Word, etc.
+    Implemented by: PDFParser, WordParser
     """
 
     @abstractmethod
     def parse(self, file_path: str) -> str:
-        """Parse a file and extract its text content.
+        """Parse file and extract text.
 
         Args:
-            file_path: Path to the file to parse
+            file_path: Path to file
 
         Returns:
-            Extracted text content from the file
+            Extracted text content
 
         Raises:
             FileParsingError: If parsing fails
-            UnsupportedFileFormatError: If file format is not supported
-            FileNotFoundError: If file does not exist
+            FileNotFoundError: If file doesn't exist
         """
 
     @abstractmethod
     def supports_format(self, file_path: Union[str, Path]) -> bool:
-        """Check if this parser supports the given file format.
-
-        Args:
-            file_path: Path to the file to check
-
-        Returns:
-            True if the parser supports this file format, False otherwise
-        """
+        """Check if this parser supports the file format."""
 
     def _validate_file_path(self, file_path: Union[str, Path]) -> None:
-        """Validate that the file path exists and is readable.
-
-        Args:
-            file_path: Path to validate
-
-        Returns:
-            Validated Path object
-
-        Raises:
-            FileNotFoundError: If file does not exist
-            PermissionError: If file is not readable
-        """
+        """Check file exists and is readable."""
         path_obj = Path(file_path)
 
         if not path_obj.exists():
@@ -66,10 +46,10 @@ class FileParser(ABC):
         if not path_obj.stat().st_size > 0:
             logger.warning("File appears to be empty: %s", path_obj)
 
-        # Check if file is readable
+        # Check readability
         try:
             with open(path_obj, "rb") as f:
-                f.read(1)  # Try to read one byte
+                f.read(1)
         except PermissionError as exc:
             raise FileParsingError(
                 "File is not readable.", original_exception=exc
@@ -80,12 +60,5 @@ class FileParser(ABC):
             ) from exc
 
     def _get_file_extension(self, file_path: Union[str, Path]) -> str:
-        """Get the file extension in lowercase.
-
-        Args:
-            file_path: Path to get extension from
-
-        Returns:
-            File extension in lowercase (including the dot)
-        """
+        """Get file extension in lowercase (includes dot)."""
         return Path(file_path).suffix.lower()

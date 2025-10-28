@@ -1,4 +1,4 @@
-"""PDF parser implementation using PDFMiner."""
+"""Extract text from PDF files using PDFMiner."""
 
 from pathlib import Path
 from typing import Union, List
@@ -11,11 +11,7 @@ from utils import logger
 
 
 class PDFParser(FileParser):
-    """Concrete implementation of FileParser for PDF files.
-
-    Uses PyPDF2 library to extract text content from PDF documents.
-    Handles multiple pages and various PDF formats.
-    """
+    """Parse PDF files and extract text content."""
 
     def __init__(self):
         """Initialize the PDF parser."""
@@ -23,13 +19,19 @@ class PDFParser(FileParser):
         logger.debug("PDFParser initialized")
 
     def parse(self, file_path: str) -> str:
-        """Parse PDF file and extract text content.
+        """Extract text from PDF file.
+
+        Steps:
+            1. Validate file path
+            2. Use PDFMiner to extract text
+            3. Clean up extracted text
+            4. Return cleaned text
 
         Args:
-            file_path: Path to the PDF file
+            file_path: Path to PDF file
 
         Returns:
-            Extracted text content from the PDF
+            Cleaned text content
 
         Raises:
             FileParsingError: If parsing fails
@@ -39,13 +41,13 @@ class PDFParser(FileParser):
         try:
             logger.info("Starting PDF parsing: %s", file_path)
 
-            # Use PDFMiner's high-level API for simple text extraction
+            # Extract text using PDFMiner
             text = extract_text(file_path)
 
             if not text or not text.strip():
                 raise FileParsingError("No text content found in PDF.")
 
-            # Clean up the extracted text
+            # Clean up text
             cleaned_text = self._clean_extracted_text(text)
 
             logger.info(
@@ -61,35 +63,19 @@ class PDFParser(FileParser):
             raise FileParsingError("PDF parsing failed.", original_exception=e) from e
 
     def _clean_extracted_text(self, text: str) -> str:
-        """Clean and normalize extracted text.
-
-        Args:
-            text: Raw extracted text
-
-        Returns:
-            Cleaned text
-        """
+        """Remove excess whitespace while keeping line breaks."""
         if not text:
             return ""
 
-        # Remove excessive whitespace while preserving line breaks
         lines: List[str] = []
         for line in text.split("\n"):
-            # Clean each line but preserve structure
             cleaned_line = " ".join(line.split())
-            if cleaned_line:  # Only add non-empty lines
+            if cleaned_line:
                 lines.append(cleaned_line)
 
         return "\n".join(lines)
 
     def supports_format(self, file_path: Union[str, Path]) -> bool:
-        """Check if this parser supports the given file format.
-
-        Args:
-            file_path: Path to the file to check
-
-        Returns:
-            True if the file is a PDF, False otherwise
-        """
+        """Check if file is a PDF."""
         extension = self._get_file_extension(file_path)
         return extension in self.supported_extensions

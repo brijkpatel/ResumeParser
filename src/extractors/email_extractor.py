@@ -1,4 +1,4 @@
-"""Email extraction implementations using different strategies."""
+"""Extract email address from resume text."""
 
 import re
 from typing import List
@@ -9,22 +9,29 @@ from utils import logger
 
 
 class EmailExtractor(FieldExtractor[str]):
-    """Extract email address from provided text"""
+    """Extract email address using configured strategy."""
 
     def __init__(self, extraction_strategy: ExtractionStrategy[List[str]]):
-        """Initialize the email extractor."""
+        """Initialize with extraction strategy (Regex, NER, or LLM)."""
         self.extraction_strategy = extraction_strategy
 
     def extract(self, text: str) -> str:
-        """Extract email.
+        """Extract email from text.
+
+        Steps:
+            1. Validate input text
+            2. Run extraction strategy
+            3. Validate email format
+            4. Return email
 
         Args:
-            text: Text content to extract email from
+            text: Resume text
+
         Returns:
-            Extracted email address
+            Email address
 
         Raises:
-            FieldExtractionError: If email extraction fails
+            FieldExtractionError: If no valid email found
         """
         processed_text = self.validate_input(text)
 
@@ -42,19 +49,7 @@ class EmailExtractor(FieldExtractor[str]):
             ) from e
 
     def validate_input(self, text: str) -> str:
-        """Validate and preprocess the input text.
-
-        Strips whitespace and ensures the text has at least 5 characters.
-
-        Args:
-            text: The input text to validate
-
-        Returns:
-            The stripped text
-
-        Raises:
-            FieldExtractionError: If validation fails
-        """
+        """Check text is long enough to contain an email."""
         text = text.strip()
         if len(text) < 5:
             raise FieldExtractionError(
@@ -62,16 +57,8 @@ class EmailExtractor(FieldExtractor[str]):
             )
         return text
 
-    # Might be hard to for other classes but email format is easy to validate
     def validate_email_format(self, email: str) -> None:
-        """Validate email format using regex.
-
-        Args:
-            email: The email address to validate
-
-        Raises:
-            FieldExtractionError: If email format is invalid
-        """
+        """Check email format is valid."""
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         if not re.match(email_pattern, email):
             raise FieldExtractionError(f"Invalid email format")

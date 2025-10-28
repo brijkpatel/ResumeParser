@@ -1,4 +1,4 @@
-"""Defines the interface for extraction strategies used in field extraction."""
+"""Field types, strategy types, and extraction interfaces."""
 
 from dataclasses import dataclass
 from typing import Optional, Generic, TypeVar, List
@@ -9,7 +9,7 @@ T = TypeVar("T")
 
 
 class FieldType(Enum):
-    """Enumeration of supported field types for extraction."""
+    """Fields that can be extracted from resumes."""
 
     NAME = "name"
     EMAIL = "email"
@@ -17,9 +17,7 @@ class FieldType(Enum):
 
 
 class StrategyType(Enum):
-    """
-    Enumeration of possible extraction strategy types.
-    """
+    """Extraction strategies available."""
 
     REGEX = "regex"
     NER = "ner"
@@ -28,30 +26,29 @@ class StrategyType(Enum):
 
 @dataclass(frozen=True)
 class FieldSpec:
-    """Minimal, immutable spec telling a strategy what to extract.
+    """Configuration for what and how to extract.
 
     Attributes:
-        field_type: The type of field to extract (e.g., name, email, skills).
-        regex_patterns: Optional list of regex patterns for regex-based strategies.
-        entity_label: Optional entity label for NER-based strategies (e.g., "PERSON").
-        top_k: Optional limit for the number of results to return for multi-valued fields. 0 means no limit. None means single-valued.
+        field_type: What to extract (name, email, skills)
+        regex_patterns: Patterns for regex strategy
+        entity_label: Label for NER strategy (e.g., "person")
+        top_k: Number limit (None = single value, 0 = unlimited, N = max N)
     """
 
     field_type: FieldType
-    # Optional knobs for strategies (e.g., NER entity label, top-k for lists)
-    regex_patterns: Optional[List[str]] = None  # e.g., for regex strategies
-    entity_label: Optional[str] = None  # e.g., "PERSON" for NER
-    top_k: Optional[int] = None  # e.g., for multi-valued fields like skills
+    regex_patterns: Optional[List[str]] = None
+    entity_label: Optional[str] = None
+    top_k: Optional[int] = None
 
 
 class ExtractionStrategy(ABC, Generic[T]):
-    """Strategy interface implemented by Regex/NER/LLM/etc."""
+    """Base class for all extraction strategies."""
 
     def __init__(self, spec: FieldSpec) -> None:
-        """Initialize the extraction strategy."""
+        """Initialize with field specification."""
         self.spec = spec
 
     @abstractmethod
     def extract(self, text: str) -> T:
-        """Run the algorithm using the provided specification."""
+        """Extract field from text."""
         raise NotImplementedError

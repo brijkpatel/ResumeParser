@@ -1,7 +1,7 @@
 """Init file for exceptions package."""
 
 from .base_exception import ResumeParserException
-from .api_exceptions import APIError, ExternalServiceError
+from .api_exceptions import ExternalServiceError
 from .parsing_exceptions import (
     FileParsingError,
     FieldExtractionError,
@@ -14,7 +14,6 @@ from .parsing_exceptions import (
 
 __all__ = [
     "ResumeParserException",
-    "APIError",
     "ExternalServiceError",
     "FileParsingError",
     "FieldExtractionError",

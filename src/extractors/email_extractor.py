@@ -3,20 +3,20 @@
 import re
 from typing import List
 
-from interfaces import FieldExtractor, StrategyType, ExtractionStrategy
+from interfaces import FieldExtractor, ExtractionStrategy
 from exceptions import FieldExtractionError
 from utils import logger
 
 
 class EmailExtractor(FieldExtractor[str]):
-    """Extract email addresses from provided text"""
+    """Extract email address from provided text"""
 
-    def __init__(self,extraction_strategy: ExtractionStrategy[List[str]]):
-        """Initialize the regex email extractor."""
+    def __init__(self, extraction_strategy: ExtractionStrategy[List[str]]):
+        """Initialize the email extractor."""
         self.extraction_strategy = extraction_strategy
 
     def extract(self, text: str) -> str:
-        """Extract email using regex patterns.
+        """Extract email.
 
         Args:
             text: Text content to extract email from
@@ -28,36 +28,18 @@ class EmailExtractor(FieldExtractor[str]):
         """
         processed_text = self.validate_input(text)
 
-        
-        for strategy in preferred_strategies:
-            if strategy == StrategyType.REGEX:
-
-        # Comprehensive email regex pattern
-        email_pattern = r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"
-
-        # Find all email matches
-        email_matches = re.findall(email_pattern, processed_text, re.IGNORECASE)
-
-        if not email_matches:
-            raise FieldExtractionError("Could not extract email from text")
-
-        # Filter and validate emails
-        valid_emails = []
-        for email in email_matches:
-            if self._is_valid_email(email):
-                valid_emails.append(email.lower())
-
-        if not valid_emails:
-            raise FieldExtractionError("No valid email addresses found")
-
-        # Remove duplicates while preserving order
-        unique_emails = list(dict.fromkeys(valid_emails))
-
-        # Choose the best email (prioritize personal emails over generic ones)
-        best_email = self._choose_best_email(unique_emails)
-
-        logger.info(f"Extracted email: {best_email}")
-        return best_email
+        try:
+            emails = self.extraction_strategy.extract(processed_text)
+            if not emails:
+                raise FieldExtractionError("No email addresses found")
+            email = emails[0]
+            logger.debug(f"Extracted email: {email}")
+            self.validate_email_format(email)
+            return email
+        except Exception as e:
+            raise FieldExtractionError(
+                "Email extraction failed", original_exception=e
+            ) from e
 
     def validate_input(self, text: str) -> str:
         """Validate and preprocess the input text.
@@ -79,3 +61,17 @@ class EmailExtractor(FieldExtractor[str]):
                 "Input text must be at least 5 characters long after stripping"
             )
         return text
+
+    # Might be hard to for other classes but email format is easy to validate
+    def validate_email_format(self, email: str) -> None:
+        """Validate email format using regex.
+
+        Args:
+            email: The email address to validate
+
+        Raises:
+            FieldExtractionError: If email format is invalid
+        """
+        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        if not re.match(email_pattern, email):
+            raise FieldExtractionError(f"Invalid email format")

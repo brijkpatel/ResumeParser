@@ -1,6 +1,5 @@
 """Tests for ResumeData data class."""
 
-import pytest
 import json
 
 from models.resume_data import ResumeData
@@ -31,6 +30,7 @@ class TestResumeDataCreation:
         )
 
         # Assert
+        assert resume.skills is not None
         assert len(resume.skills) == 1
         assert resume.skills[0] == "Python"
 
@@ -40,6 +40,7 @@ class TestResumeDataCreation:
         resume = ResumeData(name="Bob Johnson", email="bob@example.com", skills=[])
 
         # Assert
+        assert resume.skills is not None
         assert resume.skills == []
         assert len(resume.skills) == 0
 
@@ -65,6 +66,7 @@ class TestResumeDataCreation:
         )
 
         # Assert
+        assert resume.skills is not None
         assert len(resume.skills) == 10
         assert resume.skills == skills
 
@@ -274,6 +276,7 @@ class TestResumeDataImmutability:
         )
 
         # Act
+        assert resume.skills is not None
         resume.skills.append("Java")
 
         # Assert

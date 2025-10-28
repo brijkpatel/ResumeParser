@@ -26,7 +26,7 @@ class ResumeExtractor:
 
     def __init__(
         self,
-        extractors: Dict[FieldType, List[FieldExtractor]],
+        extractors: Dict[FieldType, List[FieldExtractor[Any]]],
     ):
         """Initialize the ResumeExtractor with field extractors.
 
@@ -50,7 +50,7 @@ class ResumeExtractor:
                 f"Missing required field types: {[f.value for f in missing]}"
             )
 
-        self.extractors = extractors
+        self.extractors: Dict[FieldType, List[FieldExtractor[Any]]] = extractors
 
         logger.info(
             f"ResumeExtractor initialized with extractors for "

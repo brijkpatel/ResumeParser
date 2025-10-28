@@ -1,8 +1,8 @@
-"""Data class for encapsulating extracted resume information."""
+"""Data model for extracted resume information."""
 
-from dataclasses import dataclass, asdict
-from typing import List, Optional
 import json
+from dataclasses import dataclass, asdict
+from typing import List, Optional, Dict, Any
 
 
 @dataclass
@@ -22,7 +22,7 @@ class ResumeData:
     email: Optional[str] = None
     skills: Optional[List[str]] = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert the resume data to a dictionary.
 
         Returns:

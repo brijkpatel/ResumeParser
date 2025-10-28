@@ -5,13 +5,13 @@ combining file parsing and field extraction into a single, easy-to-use interface
 """
 
 from pathlib import Path
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 
 from interfaces import FileParser, FieldType, FieldExtractor
 from coordinators import ResumeExtractor
 from models import ResumeData
 from parsers import PDFParser, WordParser
-from extractors.factory import create_extractor
+from extractors import create_extractor
 from config import ExtractionConfig, DEFAULT_EXTRACTION_CONFIG
 from exceptions import UnsupportedFileFormatError, FileParsingError
 from utils import logger
@@ -84,11 +84,11 @@ class ResumeParserFramework:
         """
         logger.debug("Creating field extractors from configuration")
 
-        extractors_dict: Dict[FieldType, List[FieldExtractor]] = {}
+        extractors_dict: Dict[FieldType, List[FieldExtractor[Any]]] = {}
 
         for field_type in [FieldType.NAME, FieldType.EMAIL, FieldType.SKILLS]:
             strategies = self.config.get_strategies_for_field(field_type)
-            field_extractors: List[FieldExtractor] = []
+            field_extractors: List[FieldExtractor[Any]] = []
 
             logger.debug(
                 f"Creating {len(strategies)} extractor(s) for {field_type.value}"
@@ -209,7 +209,7 @@ class ResumeParserFramework:
         extension = Path(file_path).suffix.lower()
         return extension in self.SUPPORTED_EXTENSIONS
 
-    def get_supported_extensions(self) -> set:
+    def get_supported_extensions(self) -> set[str]:
         """Get the set of supported file extensions.
 
         Returns:

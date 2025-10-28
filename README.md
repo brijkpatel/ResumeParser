@@ -111,7 +111,32 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-#### 4. Verify Installation
+#### 4. Configure API Keys
+
+**⚠️ Required for LLM strategy (Gemini)**
+
+Create a `.env` file in the project root:
+
+```bash
+# Copy the example file
+cp .env.example .env
+```
+
+Edit `.env` and add your Gemini API key:
+
+```bash
+GEMINI_API_KEY=your_actual_api_key_here
+```
+
+**Getting your Gemini API key:**
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key"
+4. Copy the key and paste it in your `.env` file
+
+**Note:** The `.env` file is already in `.gitignore` to prevent accidentally committing your API key.
+
+#### 5. Verify Installation
 
 ```bash
 # Run tests to verify everything works
@@ -136,7 +161,11 @@ Models are cached locally, so subsequent runs are fast.
 ### Basic Usage
 
 ```python
+from dotenv import load_dotenv
 from framework import ResumeParserFramework
+
+# Load environment variables (do this once at app startup)
+load_dotenv()
 
 # Create framework with default config
 framework = ResumeParserFramework()
@@ -154,12 +183,18 @@ data_dict = resume_data.to_dict()
 json_str = resume_data.to_json()
 ```
 
+**Note:** Always call `load_dotenv()` at the entry point of your application before using the framework. For tests, this is automatically handled in `conftest.py`.
+
 ### Custom Configuration
 
 ```python
+from dotenv import load_dotenv
 from framework import ResumeParserFramework
 from config import ExtractionConfig
 from interfaces import FieldType, StrategyType
+
+# Load environment variables
+load_dotenv()
 
 # Define custom strategy order
 custom_config = ExtractionConfig(
@@ -178,7 +213,11 @@ resume_data = framework.parse_resume("resume.docx")
 
 ```python
 from pathlib import Path
+from dotenv import load_dotenv
 from framework import ResumeParserFramework
+
+# Load environment variables once
+load_dotenv()
 
 framework = ResumeParserFramework()
 resume_dir = Path("resumes/")
@@ -262,7 +301,7 @@ The framework uses a layered architecture with multiple design patterns:
 
 - **REGEX**: Fast pattern matching (email extraction)
 - **NER**: Named Entity Recognition using transformers (~500MB models)
-- **LLM**: Large Language Model via Ollama (requires local Ollama installation)
+- **LLM**: Large Language Model via Google Gemini (requires API key in `.env` file)
 
 ### File Formats
 
@@ -276,6 +315,8 @@ The project has comprehensive test coverage with 207 tests:
 
 - **Unit Tests**: 202 tests (~3 seconds)
 - **E2E Tests**: 5 tests (~2.5 minutes, uses real NER models)
+
+**Environment Setup:** Tests automatically load `.env` via `conftest.py`, so API keys are available for all tests.
 
 ```bash
 # Fast tests (recommended for development)
@@ -338,6 +379,19 @@ To add a new field (e.g., phone number):
 4. Update configuration in `config/extraction_config.py`
 
 ## 🐛 Troubleshooting
+
+### Issue: GEMINI_API_KEY not found error
+
+```bash
+# Ensure you have created a .env file
+cp .env.example .env
+
+# Edit .env and add your API key
+# GEMINI_API_KEY=your_actual_api_key_here
+
+# Verify the file exists
+cat .env
+```
 
 ### Issue: Module not found errors
 

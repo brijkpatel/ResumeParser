@@ -1,6 +1,7 @@
 """Extract fields using Large Language Models (Gemini)."""
 
 import json
+import os
 from typing import List
 import google.generativeai as genai  # type: ignore
 
@@ -26,7 +27,18 @@ class LLMExtractionStrategy(ExtractionStrategy[List[str]]):
             InvalidStrategyConfigError: If model init fails
         """
         self.spec = spec
+
+        # Get API key from environment (load_dotenv should be called at app entry point)
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise InvalidStrategyConfigError(
+                "GEMINI_API_KEY not found in environment variables. "
+                "Please create a .env file with your API key and call load_dotenv() "
+                "at your application entry point."
+            )
+
         try:
+            genai.configure(api_key=api_key)  # type: ignore
             self.model = genai.GenerativeModel(model_name)  # type: ignore
         except Exception as e:
             raise InvalidStrategyConfigError(

@@ -6,6 +6,11 @@ with multiple fallback strategies for each field.
 
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+# This should be done once at the application entry point
+load_dotenv()
 
 # Add src directory to path to allow imports
 src_path = Path(__file__).parent / "src"

@@ -114,7 +114,8 @@ class ResumeExtractor:
                 # Check if result is meaningful
                 if result is not None and result != [] and result != "":
                     logger.info(
-                        f"Successfully extracted '{field_name}' using {extractor.__class__.__name__}"
+                        f"Successfully extracted '{field_name}' using {extractor.__class__.__name__} "
+                        f"(strategy: {getattr(getattr(extractor, 'extraction_strategy', None), '__class__', type(None)).__name__})"
                     )
                     return result
                 else:

@@ -2,6 +2,11 @@
 
 from pathlib import Path
 import pytest
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+# This ensures tests have access to API keys and other config
+load_dotenv()
 
 # Get src directory path
 src_path = Path(__file__).parent

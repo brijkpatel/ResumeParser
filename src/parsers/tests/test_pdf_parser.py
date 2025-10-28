@@ -33,7 +33,7 @@ class TestPDFParserValidFiles:
         pdf_file = TEST_DATA_DIR / "valid_resume.pdf"
         if not pdf_file.exists():
             pytest.skip(f"Test file {pdf_file} does not exist")
-        
+
         text = parser.parse(str(pdf_file))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -45,7 +45,7 @@ class TestPDFParserValidFiles:
         pdf_file = TEST_DATA_DIR / "multipage.pdf"
         if not pdf_file.exists():
             pytest.skip(f"Test file {pdf_file} does not exist")
-        
+
         text = parser.parse(str(pdf_file))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -55,7 +55,7 @@ class TestPDFParserValidFiles:
         pdf_file = TEST_DATA_DIR / "valid_resume.pdf"
         if not pdf_file.exists():
             pytest.skip(f"Test file {pdf_file} does not exist")
-        
+
         text = parser.parse(str(pdf_file))
         # Check that excessive whitespace is removed
         assert "  " not in text or text.count("  ") < len(text) // 10
@@ -81,7 +81,7 @@ class TestPDFParserInvalidFiles:
         empty_pdf = TEST_DATA_DIR / "empty.pdf"
         if not empty_pdf.exists():
             pytest.skip(f"Test file {empty_pdf} does not exist")
-        
+
         with pytest.raises(FileParsingError):
             parser.parse(str(empty_pdf))
 
@@ -90,7 +90,7 @@ class TestPDFParserInvalidFiles:
         corrupted_pdf = TEST_DATA_DIR / "corrupted.pdf"
         if not corrupted_pdf.exists():
             pytest.skip(f"Test file {corrupted_pdf} does not exist")
-        
+
         with pytest.raises(FileParsingError) as exc_info:
             parser.parse(str(corrupted_pdf))
         assert exc_info.value.original_exception is not None
@@ -100,7 +100,7 @@ class TestPDFParserInvalidFiles:
         fake_pdf = TEST_DATA_DIR / "fake.pdf"
         if not fake_pdf.exists():
             pytest.skip(f"Test file {fake_pdf} does not exist")
-        
+
         with pytest.raises(FileParsingError):
             parser.parse(str(fake_pdf))
 
@@ -109,7 +109,7 @@ class TestPDFParserInvalidFiles:
         non_pdf = TEST_DATA_DIR / "sample.txt"
         if not non_pdf.exists():
             pytest.skip(f"Test file {non_pdf} does not exist")
-        
+
         with pytest.raises(FileParsingError):
             parser.parse(str(non_pdf))
 
@@ -160,7 +160,7 @@ class TestPDFParserEdgeCases:
         image_pdf = TEST_DATA_DIR / "images_only.pdf"
         if not image_pdf.exists():
             pytest.skip(f"Test file {image_pdf} does not exist")
-        
+
         with pytest.raises(FileParsingError) as exc_info:
             parser.parse(str(image_pdf))
         assert "No text content found in PDF" in str(exc_info.value)
@@ -170,7 +170,7 @@ class TestPDFParserEdgeCases:
         protected_pdf = TEST_DATA_DIR / "password_protected.pdf"
         if not protected_pdf.exists():
             pytest.skip(f"Test file {protected_pdf} does not exist")
-        
+
         with pytest.raises(FileParsingError):
             parser.parse(str(protected_pdf))
 
@@ -179,7 +179,7 @@ class TestPDFParserEdgeCases:
         special_pdf = TEST_DATA_DIR / "special_chars.pdf"
         if not special_pdf.exists():
             pytest.skip(f"Test file {special_pdf} does not exist")
-        
+
         text = parser.parse(str(special_pdf))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -189,7 +189,7 @@ class TestPDFParserEdgeCases:
         table_pdf = TEST_DATA_DIR / "with_tables.pdf"
         if not table_pdf.exists():
             pytest.skip(f"Test file {table_pdf} does not exist")
-        
+
         text = parser.parse(str(table_pdf))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -199,7 +199,7 @@ class TestPDFParserEdgeCases:
         large_pdf = TEST_DATA_DIR / "large.pdf"
         if not large_pdf.exists():
             pytest.skip(f"Test file {large_pdf} does not exist")
-        
+
         text = parser.parse(str(large_pdf))
         assert isinstance(text, str)
         assert len(text) > 1000  # Should have substantial content

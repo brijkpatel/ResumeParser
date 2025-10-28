@@ -1,7 +1,7 @@
 """PDF parser implementation using PDFMiner."""
 
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 from pdfminer.high_level import extract_text
 
@@ -73,7 +73,7 @@ class PDFParser(FileParser):
             return ""
 
         # Remove excessive whitespace while preserving line breaks
-        lines: list[str] = []
+        lines: List[str] = []
         for line in text.split("\n"):
             # Clean each line but preserve structure
             cleaned_line = " ".join(line.split())

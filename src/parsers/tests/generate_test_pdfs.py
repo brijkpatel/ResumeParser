@@ -1,7 +1,7 @@
 """Script to generate test PDF files for parser tests."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -20,7 +20,7 @@ def create_simple_pdf():
     doc = SimpleDocTemplate(str(filename), pagesize=letter)
 
     # Container for the 'Flowable' object
-    elements: list[Any] = []
+    elements: List[Any] = []
 
     # Define styles
     styles = getSampleStyleSheet()
@@ -59,7 +59,7 @@ def create_pdf_with_tables():
     filename = data_dir / "with_tables.pdf"
     doc = SimpleDocTemplate(str(filename), pagesize=letter)
 
-    elements: list[Any] = []
+    elements: List[Any] = []
     styles = getSampleStyleSheet()
 
     elements.append(Paragraph("Resume with Tables", styles["Heading1"]))
@@ -103,7 +103,7 @@ def create_multipage_pdf():
     filename = data_dir / "multipage.pdf"
     doc = SimpleDocTemplate(str(filename), pagesize=letter)
 
-    elements: list[Any] = []
+    elements: List[Any] = []
     styles = getSampleStyleSheet()
 
     # Page 1
@@ -129,7 +129,7 @@ def create_pdf_with_special_chars():
     filename = data_dir / "special_chars.pdf"
     doc = SimpleDocTemplate(str(filename), pagesize=letter)
 
-    elements: list[Any] = []
+    elements: List[Any] = []
     styles = getSampleStyleSheet()
 
     elements.append(Paragraph("Resume with Special Characters", styles["Heading1"]))

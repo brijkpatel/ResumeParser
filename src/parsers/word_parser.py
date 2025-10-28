@@ -1,7 +1,7 @@
 """Word document parser implementation."""
 
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 from docx import Document
 
@@ -49,7 +49,7 @@ class WordParser(FileParser):
         # Handle .docx files
         try:
             document = Document(file_path)
-            text_content: list[str] = []
+            text_content: List[str] = []
 
             # Extract text from paragraphs
             for paragraph in document.paragraphs:
@@ -60,7 +60,7 @@ class WordParser(FileParser):
             # Extract text from tables
             for table in document.tables:
                 for row in table.rows:
-                    row_text: list[str] = []
+                    row_text: List[str] = []
                     for cell in row.cells:
                         cell_text = cell.text.strip()
                         if cell_text:
@@ -107,7 +107,7 @@ class WordParser(FileParser):
         try:
             # Try to use python-docx anyway (sometimes works with newer .doc files)
             document = Document(file_path)
-            text_content: list[str] = []
+            text_content: List[str] = []
 
             for paragraph in document.paragraphs:
                 text = paragraph.text.strip()

@@ -23,4 +23,3 @@ __all__ = [
     "InvalidStrategyConfigError",
     "NoMatchFoundError",
 ]
-

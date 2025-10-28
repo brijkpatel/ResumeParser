@@ -22,7 +22,9 @@ class RegexExtractionStrategy(ExtractionStrategy[List[str]]):
         """
         self.spec = spec
         if not self.spec.regex_patterns:
-            raise InvalidStrategyConfigError("At least one regex pattern must be provided")
+            raise InvalidStrategyConfigError(
+                "At least one regex pattern must be provided"
+            )
 
         self.patterns: List[re.Pattern[str]] = []
         for pattern in self.spec.regex_patterns:

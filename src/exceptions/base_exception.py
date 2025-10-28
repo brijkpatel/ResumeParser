@@ -1,5 +1,6 @@
 from typing import Optional
 
+
 class ResumeParserException(Exception):
     """Base exception class for resume parser framework."""
 

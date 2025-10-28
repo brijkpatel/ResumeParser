@@ -34,7 +34,7 @@ class TestWordParserValidFiles:
         docx_file = TEST_DATA_DIR / "valid_resume.docx"
         if not docx_file.exists():
             pytest.skip(f"Test file {docx_file} does not exist")
-        
+
         text = parser.parse(str(docx_file))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -46,7 +46,7 @@ class TestWordParserValidFiles:
         docx_file = TEST_DATA_DIR / "valid_resume.docx"
         if not docx_file.exists():
             pytest.skip(f"Test file {docx_file} does not exist")
-        
+
         text = parser.parse(str(docx_file))
         # Should have multiple lines
         assert "\n" in text
@@ -56,7 +56,7 @@ class TestWordParserValidFiles:
         docx_file = TEST_DATA_DIR / "with_tables.docx"
         if not docx_file.exists():
             pytest.skip(f"Test file {docx_file} does not exist")
-        
+
         text = parser.parse(str(docx_file))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -68,7 +68,7 @@ class TestWordParserValidFiles:
         docx_file = TEST_DATA_DIR / "formatted.docx"
         if not docx_file.exists():
             pytest.skip(f"Test file {docx_file} does not exist")
-        
+
         text = parser.parse(str(docx_file))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -92,7 +92,7 @@ class TestWordParserInvalidFiles:
         empty_docx = TEST_DATA_DIR / "empty.docx"
         if not empty_docx.exists():
             pytest.skip(f"Test file {empty_docx} does not exist")
-        
+
         with pytest.raises(FileParsingError):
             parser.parse(str(empty_docx))
 
@@ -101,7 +101,7 @@ class TestWordParserInvalidFiles:
         corrupted_docx = TEST_DATA_DIR / "corrupted.docx"
         if not corrupted_docx.exists():
             pytest.skip(f"Test file {corrupted_docx} does not exist")
-        
+
         with pytest.raises(FileParsingError) as exc_info:
             parser.parse(str(corrupted_docx))
         assert exc_info.value.original_exception is not None
@@ -111,7 +111,7 @@ class TestWordParserInvalidFiles:
         fake_docx = TEST_DATA_DIR / "fake.docx"
         if not fake_docx.exists():
             pytest.skip(f"Test file {fake_docx} does not exist")
-        
+
         with pytest.raises(FileParsingError):
             parser.parse(str(fake_docx))
 
@@ -120,7 +120,7 @@ class TestWordParserInvalidFiles:
         non_docx = TEST_DATA_DIR / "sample.txt"
         if not non_docx.exists():
             pytest.skip(f"Test file {non_docx} does not exist")
-        
+
         with pytest.raises(FileParsingError) as exc_info:
             parser.parse(str(non_docx))
         assert "Unsupported file format" in str(exc_info.value)
@@ -144,14 +144,16 @@ class TestWordParserLegacyDoc:
         doc_file = TEST_DATA_DIR / "sample.doc"
         if not doc_file.exists():
             pytest.skip(f"Test file {doc_file} does not exist")
-        
+
         # Legacy .doc files may or may not work depending on the file
         try:
             text = parser.parse(str(doc_file))
             assert isinstance(text, str)
         except FileParsingError as e:
             # This is acceptable - legacy .doc support is limited
-            assert "Cannot parse legacy .doc file" in str(e) or "Error parsing Word document" in str(e)
+            assert "Cannot parse legacy .doc file" in str(
+                e
+            ) or "Error parsing Word document" in str(e)
 
     def test_supports_doc_extension(self, parser: WordParser):
         """Test that .doc extension is reported as supported."""
@@ -205,7 +207,7 @@ class TestWordParserEdgeCases:
         image_docx = TEST_DATA_DIR / "images_only.docx"
         if not image_docx.exists():
             pytest.skip(f"Test file {image_docx} does not exist")
-        
+
         with pytest.raises(FileParsingError) as exc_info:
             parser.parse(str(image_docx))
         assert "No text content found in document" in str(exc_info.value)
@@ -215,7 +217,7 @@ class TestWordParserEdgeCases:
         special_docx = TEST_DATA_DIR / "special_chars.docx"
         if not special_docx.exists():
             pytest.skip(f"Test file {special_docx} does not exist")
-        
+
         text = parser.parse(str(special_docx))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -225,7 +227,7 @@ class TestWordParserEdgeCases:
         header_docx = TEST_DATA_DIR / "with_headers.docx"
         if not header_docx.exists():
             pytest.skip(f"Test file {header_docx} does not exist")
-        
+
         text = parser.parse(str(header_docx))
         assert isinstance(text, str)
         # Headers/footers may or may not be extracted depending on implementation
@@ -235,7 +237,7 @@ class TestWordParserEdgeCases:
         list_docx = TEST_DATA_DIR / "with_lists.docx"
         if not list_docx.exists():
             pytest.skip(f"Test file {list_docx} does not exist")
-        
+
         text = parser.parse(str(list_docx))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -245,7 +247,7 @@ class TestWordParserEdgeCases:
         large_docx = TEST_DATA_DIR / "large.docx"
         if not large_docx.exists():
             pytest.skip(f"Test file {large_docx} does not exist")
-        
+
         text = parser.parse(str(large_docx))
         assert isinstance(text, str)
         assert len(text) > 1000  # Should have substantial content
@@ -255,7 +257,7 @@ class TestWordParserEdgeCases:
         empty_para_docx = TEST_DATA_DIR / "empty_paragraphs.docx"
         if not empty_para_docx.exists():
             pytest.skip(f"Test file {empty_para_docx} does not exist")
-        
+
         text = parser.parse(str(empty_para_docx))
         assert isinstance(text, str)
         # Empty paragraphs should be filtered out
@@ -266,7 +268,7 @@ class TestWordParserEdgeCases:
         nested_docx = TEST_DATA_DIR / "nested_tables.docx"
         if not nested_docx.exists():
             pytest.skip(f"Test file {nested_docx} does not exist")
-        
+
         text = parser.parse(str(nested_docx))
         assert isinstance(text, str)
         assert len(text) > 0
@@ -276,7 +278,7 @@ class TestWordParserEdgeCases:
         docx_file = TEST_DATA_DIR / "with_tables.docx"
         if not docx_file.exists():
             pytest.skip(f"Test file {docx_file} does not exist")
-        
+
         text = parser.parse(str(docx_file))
         # If tables exist, they should be formatted with |
         # This test is informational

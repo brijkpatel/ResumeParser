@@ -6,7 +6,6 @@ from interfaces import FieldExtractor, ExtractionStrategy
 from exceptions import FieldExtractionError
 
 
-
 class NameExtractor(FieldExtractor[str]):
     """Extract Name from provided text"""
 
@@ -33,7 +32,9 @@ class NameExtractor(FieldExtractor[str]):
                 raise FieldExtractionError("No names found")
             return names[0]  # Return the first extracted name
         except Exception as e:
-            raise FieldExtractionError("Name extraction failed", original_exception=e) from e
+            raise FieldExtractionError(
+                "Name extraction failed", original_exception=e
+            ) from e
 
     def validate_input(self, text: str) -> str:
         """Validate and preprocess the input text.
